@@ -16,6 +16,7 @@ promiseResultante.then((resposta => {
   console.log('=================')
 
   condicao(lat, lon)
+  news()
 })).catch(erro => {
   console.log(`Erro na URL: ${erro}`)
 })
@@ -23,14 +24,30 @@ promiseResultante.then((resposta => {
 async function condicao (LAT, LON){
   const { PROTOCOLO_SEGURO, BASE_URL_CONDICAO, UNITS, IDIOM : LANG} = process.env
   URL = `${PROTOCOLO_SEGURO}://${BASE_URL_CONDICAO}?lat=${LAT}&lon=${LON}&units=${UNITS}&lang=${LANG}&appid=${APPID_OPENWEATHER}`
-  console.log('=================')
   try{
-      const promiseResultante = await axios.get(URL)
-      console.log('Condições Climáticas\n')
-      console.log(`Descrição: ${promiseResultante.data.weather[0].description}`)
-      console.log(`Sensação térmica: ${promiseResultante.data.main.feels_like}°C`)
+    const promiseResultante = await axios.get(URL)
+    console.log('Condições Climáticas\n')
+    console.log(`Descrição: ${promiseResultante.data.weather[0].description}`)
+    console.log(`Sensação térmica: ${promiseResultante.data.main.feels_like}°C`)
     }catch(erro){
       console.log(`Erro: ${erro}`)
     }
     console.log('=================')
+}
+
+async function news() {
+  const { PROTOCOLO_SEGURO, BASE_URL_NEWS, APPID_NEWS, IDIOM : LANG, PAGE_SIZE, ORDEM } = process.env
+  URL = `${PROTOCOLO_SEGURO}://${BASE_URL_NEWS}?q=${Q}&language=${LANG}&pageSize=${PAGE_SIZE}&sortBy=${ORDEM}&apiKey=${APPID_NEWS}`
+  try{
+    const promiseResultante = await axios.get(URL)
+    console.log('Notícias\n')
+    for(let numNoticia of Object.keys(promiseResultante.data.articles)){
+      const noticiasCidade = promiseResultante.data.articles[numNoticia]
+      console.log(`Notícia ${Number (numNoticia) + 1}: ${noticiasCidade.title}.`)
+      console.log(`Descrição: ${noticiasCidade.description}.\n`)
+    }
+  }catch(erro){
+    console.log(`Erro: ${erro}`)
+  }
+  console.log('=================')
 }
